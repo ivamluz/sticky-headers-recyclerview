@@ -24,6 +24,7 @@ public class StickyRecyclerHeadersDecoration extends RecyclerView.ItemDecoration
   private final HeaderPositionCalculator mHeaderPositionCalculator;
   private final HeaderRenderer mRenderer;
   private final DimensionCalculator mDimensionCalculator;
+  private StickyRecyclerHeadersPositionChangeListener mHeaderListener;
 
   /**
    * The following field is used as a buffer for internal calculations. Its sole purpose is to avoid
@@ -119,6 +120,11 @@ public class StickyRecyclerHeadersDecoration extends RecyclerView.ItemDecoration
           headerOffset = new Rect();
           mHeaderRects.put(position, headerOffset);
         }
+
+        if (mHeaderListener != null) {
+          mHeaderListener.onHeaderPositionChanged(mAdapter.getHeaderId(position), header, position, headerOffset);
+        }
+
         mHeaderPositionCalculator.initHeaderBounds(headerOffset, parent, header, itemView, hasStickyHeader);
         mRenderer.drawHeader(parent, canvas, header, headerOffset);
       }
@@ -164,5 +170,9 @@ public class StickyRecyclerHeadersDecoration extends RecyclerView.ItemDecoration
   public void invalidateHeaders() {
     mHeaderProvider.invalidate();
     mHeaderRects.clear();
+  }
+
+  public void setHeaderPositionListener(StickyRecyclerHeadersPositionChangeListener headerListener) {
+    this.mHeaderListener = headerListener;
   }
 }
